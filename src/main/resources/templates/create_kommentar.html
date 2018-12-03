@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}" href="../static/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <title>Kommentar schreiben</title>
+</head>
+<body class="container col-6 justify-content-center" >
+
+<!-- Header -->
+<nav class="navbar navbar-light bg-white">
+    <a class="headerText">
+        <img src="logo.png" class="d-inline-block align-top" width="150" height="150" alt="logo"><img>
+    </a>
+</nav>
+
+<h2>Schreibe einen Kommentar zu diesem Beitrag</h2>
+<!--th:object muss hier gleich heißen, wie in der Mapping-Methode vom Controller, nur ohne "create"-->
+<form th:action="@{/kommentar(currentBeitrag=${currentBeitrag.id})}" th:object="${kommentar}" method="post">
+
+    <div class="form-group">
+        <label for="inhalt">Dein netter Kommentar: </label>
+        <textarea rows="10" type="text" class="form-control" id="inhalt" th:field="*{inhalt}"></textarea>
+    </div>
+
+    <div th:if="${#fields.hasErrors('inhalt')}" th:errors="*{inhalt}"></div>
+
+    <button class="btn btn-primary" type="submit">Kommentar absenden</button>
+    <a class="btn btn-primary" href="/">Abbrechen</a>
+</form>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</body>
+</html>

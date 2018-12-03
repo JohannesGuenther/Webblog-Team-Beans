@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}" href="../static/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Amatic+SC" rel="stylesheet">
+
+
+    <title>Team Beans</title>
+</head>
+
+<body class="container">
+
+<header>
+    <div class="page-header">
+
+        <!-- Header -->
+        <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand" href="#">
+                    <img src="logo.png" class="d-inline-block align-top" width="150" height="150" alt="logo"><img></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="material-icons md-light">menu</i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item"><a class="btn btn-outline-warning m-2" href="/login" th:if="${currentUser == null}">Login</a>
+                        </li>
+                        <li class="nav-item"><a class="btn btn-outline-warning m-2" href="/signup" th:if="${currentUser == null}">Registrierung</a>
+                        </li>
+
+                        <li class="nav-item" th:if="${currentUser != null && currentUser.administrator}"><a
+                                class="btn btn-outline-light m-2" href="/administration">Admin Seite</a></li>
+                        <li class="nav-item" th:if="${currentUser != null && currentUser.administrator}"><a
+                                class="btn btn-outline-light m-2" href="/beitrag">Neuer Beitrag</a></li>
+                        <li class="nav-item" th:if="${currentUser != null && !currentUser.administrator}">
+                            <form class="navbar-form" th:action="@{/logout}" method="post">
+                                <button class="btn btn-outline-warning logout-button m-2" type="submit">Logout</button>
+                            </form>
+                        </li>
+                        <li class="nav-item" th:if="${currentUser != null && currentUser.administrator}">
+                            <form class="navbar-form" th:action="@{/logout}" method="post">
+                                <button class="btn btn-outline-warning m-2" type="submit">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+
+    <!--Begrüßungstext-->
+    <h1>
+        Hallo
+        <th:block th:text="${currentUser != null ? currentUser.name : 'Unbekannter'}"></th:block>
+        !
+        <br>
+        Herzlich Willkommen auf unserem Blog.
+    </h1>
+
+    </div>
+
+</header>
+
+<!--Anzeige der Beiträge-->
+<div>
+    <div class="card beitraege" th:each="beitrag: ${beitraege}">
+        <div class="card-body">
+            <div class="card-title">
+                <h5 class="beitrag-ueberschrift" th:text="${beitrag.ueberschrift}"></h5>
+
+                <div class="card-text">
+
+                    <div class="beitrag-verfasser">
+                        <p>Verfasser: <span th:text="${beitrag.getUser().getName()}"></span></p>
+                    </div>
+
+                    <div class="beitrag-datum">
+                        <p>Datum: <span
+                                th:text="${#temporals.format(beitrag.getCreationDate(), 'dd-MM-yyyy HH:mm')}"></span>
+                        </p>
+                    </div>
+                    <p></p>
+                    <table class="table beitrag-table">
+                        <tbody class="container">
+                        <div class="row">
+                            <tr>
+                                <td class="col-11">
+                                    <div th:text="${beitrag.text}" ></div>
+                                </td>
+                                <td class="col-1 button-spalte">
+                                    <div th:if="${currentUser != null && currentUser.administrator && beitrag != null}">
+                                        <form th:action="@{/loescheBeitrag(currentBeitragId=${beitrag.id})}"
+                                              th:object="${beitrag}"
+                                              method="post">
+                                            <button class="btn btn-primary kommentar-loeschen" type="submit" data-toggle="tooltip" data-placement="bottom" title="Beitrag und seine Kommentare löschen">
+                                                <i class="material-icons">delete_outline</i></button>
+
+                                        </form>
+                                    </div>
+                                    <div th:if="${beitrag != null && currentUser != null && currentUser.administrator}">
+                                        <a class="btn btn-primary" data-toggle="tooltip" data-placement="bottom" title="Beitrag bearbeiten"
+                                           th:href="@{/BeitragBearbeiten(currentBeitrag=${beitrag.id})}"> <i
+                                                class="material-icons">edit</i></a>
+                                    </div>
+                                    <div>
+                                        <a class="btn btn-primary" data-toggle="tooltip" data-placement="bottom" title="Vorherige Versionen ansehen"
+                                           th:href="@{/VersionHistory(currentBeitrag=${beitrag.id})}">
+                                            <i class="material-icons">history</i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </div>
+                        </tbody>
+                    </table>
+                    <table class="table kommentar-table">
+                        <tbody class="container">
+                        <div class="row">
+                            <tr th:each="kommentar: ${beitrag.kommentare}">
+                                <td class="col-11">
+                                    <div class="kommentar-verfasser">
+                                        <p> Verfasser: <span th:text="${kommentar.getUser().getName()}"></span>, Datum:
+                                            <span
+                                                    th:text="${#temporals.format(kommentar.getErstellungsDatum(), 'dd-MM-yyyy HH:mm')}"></span>
+                                        </p></div><div class="col-11 kommentar-spalte" th:text="${kommentar.inhalt}"></div>
+                                </td>
+                                <td class="col-1 button-spalte">
+                                    <div th:if="${kommentar!=null} and ${currentUser != null} and ${currentUser == kommentar.user} or ${currentUser != null} and ${currentUser.administrator}">
+                                        <form th:action="@{/löscheKommentar(currentKommentar=${kommentar.id})}"
+                                              th:object="${kommentar}" method="post">
+                                            <button class="btn btn-primary kommentar-loeschen" type="submit" data-toggle="tooltip" data-placement="bottom" title="Kommentar löschen"><i
+                                                    class="material-icons">delete_outline</i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </div>
+                        </tbody>
+                    </table>
+
+                    <div th:if="${currentUser != null}"><a class="btn btn-primary"
+                                                           th:href="@{/kommentar(currentBeitrag=${beitrag.id})}">Kommentar
+                        schreiben</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</body>
+</html>
